@@ -12,6 +12,7 @@ export interface SketchfabAPI {
   setShowWatermark: (show: boolean) => void;
   start: () => void;
   setShowAnnotations: (show: boolean) => void;
+  setPostProcessing: (enabled: boolean) => void;
 }
 
 export interface CameraData {

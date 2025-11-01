@@ -24,6 +24,9 @@ export function useSketchfab(onApiReady: (api: SketchfabAPI) => void) {
             console.log("Sketchfab viewer ready!");
             apiRef.current = api;
             initializedRef.current = true;
+
+            apiRef.current.setPostProcessing(false);
+
             onApiReady(api);
             setLoading(false);
           });
@@ -45,8 +48,11 @@ export function useSketchfab(onApiReady: (api: SketchfabAPI) => void) {
         annotation: 0,
         annotations_visible: 0,
         dof_circle: 0,
+        antialias: 0,
+        dpr: 1,
       });
     };
+
     // @ts-expect-error-ignore-next-line
     if (!window.Sketchfab) {
       const script = document.createElement("script");
