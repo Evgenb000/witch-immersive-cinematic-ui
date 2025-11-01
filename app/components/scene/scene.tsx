@@ -93,7 +93,7 @@ export const Scene: React.FC<Props> = ({
       </div>
 
       {CAMERA_POSITIONS.map((_, index) => (
-        <div key={index} className="h-screen">
+        <div key={index} className="h-[300vh]">
           <div className="fixed translate-y-40 inset-0 flex items-center justify-center">
             {getActiveBlockIndex(scrollProgress) !== null && (
               <div className="relative">
