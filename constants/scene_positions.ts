@@ -1,5 +1,5 @@
 export const SCENE_POSITIONS = [
-  [20, 22],
+  [18, 23],
   [28, 36],
   [52, 60],
   [70, 82],

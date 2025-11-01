@@ -9,3 +9,73 @@ body {
   padding: 0;
   overflow-x: hidden;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.7s ease forwards;
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.animate-flash {
+  animation: flash 1s ease-in-out forwards;
+}
+
+@keyframes smoke {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-50px) scale(1.1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-100px) scale(1.2);
+    opacity: 0;
+  }
+}
+.animate-smoke {
+  animation: smoke 2s ease-in-out forwards;
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0.4;
+    transform: scale(1);
+    filter: brightness(1.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.5);
+    filter: brightness(2);
+  }
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+    filter: brightness(1.3);
+  }
+}
+
+.animate-flicker > div {
+  animation: flicker 1.5s infinite;
+}

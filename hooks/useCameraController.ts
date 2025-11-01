@@ -60,14 +60,16 @@ export function useCameraController() {
 
       if (Math.abs(targetScrollRef.current - smoothScrollRef.current) > 0.1) {
         animationFrameRef.current = requestAnimationFrame(updateCamera);
+      } else {
+        animationFrameRef.current = 0;
       }
     };
 
     const handleScroll = () => {
       targetScrollRef.current = window.scrollY;
-      if (animationFrameRef.current)
-        cancelAnimationFrame(animationFrameRef.current);
-      animationFrameRef.current = requestAnimationFrame(updateCamera);
+      if (!animationFrameRef.current) {
+        animationFrameRef.current = requestAnimationFrame(updateCamera);
+      }
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });

@@ -1,28 +1,31 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SketchfabAPI } from "@/types/sketchfab";
 
 export function useSketchfab(onApiReady: (api: SketchfabAPI) => void) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const apiRef = useRef<SketchfabAPI | null>(null);
+  const [loading, setLoading] = useState(true);
+  const initializedRef = useRef(false);
 
   useEffect(() => {
+    if (initializedRef.current) return;
+    if (!iframeRef.current) return;
+
     const initSketchfab = () => {
-      const iframe = iframeRef.current;
       // @ts-expect-error-ignore-next-line
-      const client = new window.Sketchfab("1.12.1", iframe);
+      const client = new window.Sketchfab("1.12.1", iframeRef.current!);
 
       client.init("c7dd3f813d054957ab85accdfd6e47fd", {
         success: (api: SketchfabAPI | null) => {
-          if (!api) {
-            console.error("Sketchfab API not found");
-            return;
-          }
+          if (!api) return console.error("Sketchfab API not found");
 
           api.start();
           api.addEventListener("viewerready", () => {
             console.log("Sketchfab viewer ready!");
             apiRef.current = api;
+            initializedRef.current = true;
             onApiReady(api);
+            setLoading(false);
           });
         },
         error: () => console.error("Sketchfab API error"),
@@ -44,16 +47,17 @@ export function useSketchfab(onApiReady: (api: SketchfabAPI) => void) {
         dof_circle: 0,
       });
     };
-
-    const script = document.createElement("script");
-    script.src = "https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js";
-    script.onload = initSketchfab;
-    document.body.appendChild(script);
-
-    return () => {
-      script.remove();
-    };
+    // @ts-expect-error-ignore-next-line
+    if (!window.Sketchfab) {
+      const script = document.createElement("script");
+      script.src =
+        "https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js";
+      script.onload = initSketchfab;
+      document.body.appendChild(script);
+    } else {
+      initSketchfab();
+    }
   }, [onApiReady]);
 
-  return { iframeRef };
+  return { iframeRef, apiRef, loading };
 }
