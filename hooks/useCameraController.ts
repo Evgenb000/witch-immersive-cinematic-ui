@@ -9,6 +9,8 @@ export function useCameraController() {
   const animationFrameRef = useRef<number>(0);
   const smoothScrollRef = useRef<number>(0);
   const targetScrollRef = useRef<number>(0);
+  const cursorPosRef = useRef({ x: 0, y: 0 });
+  const smoothCursorRef = useRef({ x: 0, y: 0 });
 
   const handleApiReady = (api: SketchfabAPI) => {
     apiRef.current = api;
@@ -20,6 +22,12 @@ export function useCameraController() {
   };
 
   useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      cursorPosRef.current = { x, y };
+    };
+
     const updateCamera = () => {
       if (!apiRef.current) return;
       const now = Date.now();
@@ -29,9 +37,13 @@ export function useCameraController() {
       }
 
       lastUpdateTimeRef.current = now;
-      const smoothFactor = 0.2;
+      const smoothFactor = 0.15;
       smoothScrollRef.current +=
         (targetScrollRef.current - smoothScrollRef.current) * smoothFactor;
+      smoothCursorRef.current.x +=
+        (cursorPosRef.current.x - smoothCursorRef.current.x) * 0.1;
+      smoothCursorRef.current.y +=
+        (cursorPosRef.current.y - smoothCursorRef.current.y) * 0.1;
 
       const totalHeight =
         document.documentElement.scrollHeight - window.innerHeight;
@@ -52,17 +64,27 @@ export function useCameraController() {
         t
       );
 
-      apiRef.current.setCameraLookAt(
-        interpolated.position,
-        interpolated.target,
-        0.1
-      );
+      const dir = [
+        interpolated.target[0] - interpolated.position[0],
+        interpolated.target[1] - interpolated.position[1],
+        interpolated.target[2] - interpolated.position[2],
+      ];
 
-      if (Math.abs(targetScrollRef.current - smoothScrollRef.current) > 0.1) {
-        animationFrameRef.current = requestAnimationFrame(updateCamera);
-      } else {
-        animationFrameRef.current = 0;
-      }
+      const offsetFactor = 0.3;
+
+      const newTarget = [
+        interpolated.position[0] +
+          dir[0] -
+          smoothCursorRef.current.y * offsetFactor * Math.abs(dir[0]),
+        interpolated.position[1] +
+          dir[1] -
+          smoothCursorRef.current.x * offsetFactor * Math.abs(dir[1]),
+        interpolated.position[2] + dir[2],
+      ];
+
+      apiRef.current.setCameraLookAt(interpolated.position, newTarget, 0.1);
+
+      animationFrameRef.current = requestAnimationFrame(updateCamera);
     };
 
     const handleScroll = () => {
@@ -73,8 +95,11 @@ export function useCameraController() {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("mousemove", handleMouseMove);
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("mousemove", handleMouseMove);
       if (animationFrameRef.current)
         cancelAnimationFrame(animationFrameRef.current);
     };
