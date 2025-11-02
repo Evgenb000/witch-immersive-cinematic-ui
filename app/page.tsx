@@ -27,7 +27,7 @@ export default function WitchHouse() {
           ref={iframeRef}
           id="api-frame"
           title="Stylized Witch's Room"
-          className="w-full h-full border-0"
+          className="w-full h-full border-0 pointer-events-none"
           allowFullScreen
           allow="autoplay; fullscreen; xr-spatial-tracking"
         />

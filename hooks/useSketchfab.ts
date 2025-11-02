@@ -21,7 +21,6 @@ export function useSketchfab(onApiReady: (api: SketchfabAPI) => void) {
 
           api.start();
           api.addEventListener("viewerready", () => {
-            console.log("Sketchfab viewer ready!");
             apiRef.current = api;
             initializedRef.current = true;
 
@@ -44,6 +43,7 @@ export function useSketchfab(onApiReady: (api: SketchfabAPI) => void) {
         ui_vr: 0,
         ui_ar: 0,
         ui_stop: 0,
+        ui_start: 0,
         camera: 0,
         annotation: 0,
         annotations_visible: 0,
